@@ -11,26 +11,32 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@RequestMapping("/api/v1")
 @RestController
-public class MainController {
+@RequestMapping("/api/v1/movies")
+public class MovieController {
 
     private final MovieRepository movieRepository;
 
-    public MainController(MovieJdbcRepository movieJdbcRepository) {
-        this.movieRepository = movieJdbcRepository;
+    public MovieController(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
     }
 
-    @GetMapping("")
-    public String home() {
-        System.out.println("왔다");
-        return "Hello World";
-    }
-
+    /**
+     * 모든 영화 정보 (개발용)
+     */
     @ResponseBody
-    @GetMapping("/movies")
+    @GetMapping("/")
     public ResponseEntity<List<MovieDTO>> movieMain() {
-        log.info("영화 메인");
+        log.info("영화 메인 화면");
         return new ResponseEntity<>(movieRepository.findAll(), HttpStatus.OK);
+    }
+
+    /**
+     * 키워드로 영화 제목 검색
+     */
+    @ResponseBody
+    @GetMapping("/search")
+    public ResponseEntity<List<MovieDTO>> search(@RequestParam("keyword") String keyword) {
+        return new ResponseEntity<>(movieRepository.findByKeyword(keyword), HttpStatus.OK);
     }
 }

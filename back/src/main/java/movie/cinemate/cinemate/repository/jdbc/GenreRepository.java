@@ -1,12 +1,10 @@
-package movie.cinemate.cinemate.repository;
+package movie.cinemate.cinemate.repository.jdbc;
 
 import lombok.extern.slf4j.Slf4j;
 import movie.cinemate.cinemate.domain.Genre;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-
-import static movie.cinemate.cinemate.repository.DBConnectionUtil.*;
 
 @Slf4j
 @Repository
@@ -18,11 +16,11 @@ public class GenreRepository {
         PreparedStatement pstmt = null;
 
         try {
-            con = getConnection();
+            con = DBConnectionUtil.getConnection();
             pstmt = con.prepareStatement(sql);
             pstmt.setLong(1, genre.getId());
             pstmt.setString(2, genre.getName());
-            pstmt.executeUpdate();
+//            pstmt.executeUpdate();
             return genre;
         } catch (SQLException e) {
             log.error("db error", e);
