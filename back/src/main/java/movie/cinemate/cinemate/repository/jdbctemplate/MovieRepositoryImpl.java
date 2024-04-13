@@ -23,12 +23,18 @@ public class MovieRepositoryImpl {
     }
 
     public List<MovieDto> findAll(int page) {
-        String sql = "select * from movie limit ? offset ?";
+        String sql = "select * from (select * from movie order by movie.popularity desc limit ? offset ?) m " +
+                "join movie_genre mg on m.movie_id = mg.movie_id " +
+                "join genre g on g.genre_id = mg.genre_id";
+
         List<Object> param = new ArrayList<>();
         param.add(30);
-        param.add((page-1) * 30 + 1);
-        log.info("param  {}", param.toString());
-        return template.query(sql, movieDtoRowMapper(), param.toArray());
+        param.add((page-1) * 30);
+
+        log.info("param={}", param);
+        Map<Long, MovieDto> map = new LinkedHashMap<>();
+        template.query(sql, getRowMapper(map, MovieDto.class), param.toArray());
+        return map.values().stream().toList();
     }
 
     public MovieDto getMovie(Long movieId) {
@@ -39,15 +45,33 @@ public class MovieRepositoryImpl {
                 "WHERE m.movie_id = ?;";
         Map<Long, MovieDto> map = new HashMap<>();
 
-        template.query(query, (rs, rowNum) -> {
+        MovieDto movie = new MovieDto();
+        List<Genre> genres = new ArrayList<>();
+        template.query(query, getRowMapper(map, MovieDto.class), movieId);
+        return map.get(movieId);
+    }
+
+//    private static RowMapper<Object> getRowMapper(Long movieId, Map<Long, MovieDto> map) {
+//        return (rs, rowNum) -> {
+//            if (map.get(movieId) == null) {
+//                map.put(movieId, (new BeanPropertyRowMapper<>(MovieDto.class)).mapRow(rs, rowNum));
+//            }
+//            map.get(movieId)
+//               .getGenres()
+//               .add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
+//            return null;
+//        };
+//    }
+
+    private <T extends MovieDto> RowMapper<Object> getRowMapper(Map<Long, T> map, Class<T> clazz) {
+        return (rs, rowNum) -> {
+            Long movieId = rs.getLong("movie_id");
             if (map.get(movieId) == null) {
-                map.put(movieId, (new BeanPropertyRowMapper<>(MovieDto.class)).mapRow(rs, rowNum));
+                map.put(movieId, new BeanPropertyRowMapper<>(clazz).mapRow(rs, rowNum));
             }
             map.get(movieId).getGenres().add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
             return null;
-        }, movieId);
-
-        return map.get(movieId);
+        };
     }
 
     public <T extends MovieDto> T getMovie(Long movieId, Class<T> clazz) {

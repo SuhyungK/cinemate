@@ -32,7 +32,7 @@ public class MovieController {
     /**
      * 전체 영화 조회 페이징
      */
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<MovieDto>> movieByPage(@RequestParam int page) {
         log.info("page={}", page);
         return new ResponseEntity<>(movieRepository.findAll(page), HttpStatus.OK);

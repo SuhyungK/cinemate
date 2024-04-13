@@ -1,16 +1,15 @@
 package movie.cinemate.cinemate.entity.movie;
 
-import lombok.Data;
+import lombok.*;
+import org.simpleflatmapper.map.annotation.Column;
+import org.simpleflatmapper.map.annotation.Key;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Genre {
+    @Column("genre_id")
     private Long genreId;
     private String name;
-
-    public Genre() {};
-
-    public Genre(Long genreId, String name) {
-        this.genreId = genreId;
-        this.name = name;
-    }
 }
