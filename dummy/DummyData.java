@@ -64,9 +64,9 @@ public class DummyData {
         private String id;
         private String[] movieInfo;
 
-        public CustomMovie(String id, String title, String original_title, String overview, String poster_path, String backdrop_path, String runtime, String release_date, String vote_average) {
+        public CustomMovie(String id, String title, String original_title, String overview, String poster_path, String backdrop_path, String runtime, String release_date, String vote_average, String popularity) {
             this.id = id;
-            this.movieInfo = new String[]{id, title, original_title, overview, poster_path, backdrop_path, runtime, release_date, vote_average};
+            this.movieInfo = new String[]{id, title, original_title, overview, poster_path, backdrop_path, runtime, release_date, vote_average, popularity};
         }
 
         public String[] getMovieInfo() {
@@ -140,7 +140,8 @@ public class DummyData {
                 tmdbMovieDTO.getBackdrop_path(),
                 tmdbMovieDTO.getRuntime(),
                 tmdbMovieDTO.getRelease_date(),
-                tmdbMovieDTO.getVote_average()
+                tmdbMovieDTO.getVote_average(),
+                tmdbMovieDTO.getPopularity()
         ));
 
         // 영화-장르 정보 추가
@@ -202,19 +203,19 @@ public class DummyData {
         }
     }
 
-    ;
-
     static void writeCSV() {
 
         String[] header;
         FileWriter output;
         CSVWriter writer;
         try {
-            // 영화 csv
+            /**
+             * 영화 csv
+             */
             File file1 = new File("../csv/movie.csv");
             output = new FileWriter(file1);
             writer = new CSVWriter(output);
-            header = new String[]{"movie_id", "title", "original_title", "overview", "poster_path", "backdrop_path", "runtime", "release_date", "vote_average"};
+            header = new String[]{"movie_id", "title", "original_title", "overview", "poster_path", "backdrop_path", "runtime", "release_date", "vote_average", "popularity"};
             writer.writeNext(header);
             for (CustomMovie movie : movieList) {
                 writer.writeNext(movie.getMovieInfo());
@@ -284,7 +285,7 @@ public class DummyData {
             File file7 = new File("../csv/video.csv");
             output = new FileWriter(file7);
             writer = new CSVWriter(output);
-            header = new String[]{"movie_id", "video_id", "key", "name", "size"};
+            header = new String[]{"movie_id", "video_id", "path", "name", "size"};
             writer.writeNext(header);
             writer.writeAll(videoList);
             writer.close();

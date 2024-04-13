@@ -12,6 +12,8 @@ public class TMDBMovieDTO {
     private String runtime;
     private String release_date;
     private String vote_average;
+    private String popularity;
+
     private Videos videos;
     private Credits credits;
     private List<Genre> genres;
@@ -54,6 +56,10 @@ public class TMDBMovieDTO {
 
     public String getVote_average() {
         return vote_average;
+    }
+
+    public String getPopularity() {
+        return popularity;
     }
 
     public Videos getVideos() {
