@@ -1,32 +1,94 @@
 package movie.cinemate.cinemate.repository.jdbctemplate;
 
-import movie.cinemate.cinemate.domain.Movie;
-import movie.cinemate.cinemate.domain.MovieDTO;
-import movie.cinemate.cinemate.repository.MovieRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import movie.cinemate.cinemate.entity.movie.*;
+import movie.cinemate.cinemate.dto.MovieDetailDto;
+import movie.cinemate.cinemate.dto.MovieDto;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
 
-public class MovieRepositoryImpl implements MovieRepository {
+@Slf4j
+@Repository
+public class MovieRepositoryImpl {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate template;
 
     public MovieRepositoryImpl(DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.template = new JdbcTemplate(dataSource);
     }
 
-    @Override
-    public List<MovieDTO> findAll() {
-        return List.of();
+    public List<MovieDto> findAll(int page) {
+        String sql = "select * from movie limit ? offset ?";
+        return template.query(sql, movieDtoRowMapper(), 30, (page-1) * 30);
     }
 
-    @Override
-    public List<MovieDTO> findByKeyword(String title) {
-        return List.of();
+    public MovieDetailDto getMoveDetail(Long movieId) {
+        String query = "SELECT m.movie_id, m.title, m.original_title, m.overview, m.poster_path, m.backdrop_path, m.runtime, " +
+                "m.release_date, m.vote_average, m.popularity, g.genre_id, g.name FROM movie m " +
+                "JOIN movie_genre mg ON m.movie_id = mg.movie_id " +
+                "JOIN genre g ON mg.genre_id = g.genre_id " +
+                "WHERE m.movie_id = ?;";
+        Map<Long, MovieDetailDto> map = new HashMap<>();
+
+        template.query(query, (rs, rowNum) -> {
+            if (map.get(movieId) == null) {
+                map.put(movieId, (new BeanPropertyRowMapper<>(MovieDetailDto.class)).mapRow(rs, rowNum));
+            }
+            map.get(movieId).getGenres().add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
+            return null;
+        }, movieId);
+
+        map.get(movieId).setActors(getCasts(movieId));
+        map.get(movieId).setDirectors(getCrews(movieId));
+        map.get(movieId).setVideos(getVideos(movieId));
+        log.info("Actors={}", getCasts(movieId));
+        return map.get(movieId);
     }
 
+    private List<Actor> getCasts(Long movieId) {
+        return template.query("select a.* from actor a " +
+                        "join cast c on a.actor_id = c.actor_id " +
+                        "join movie m on m.movie_id = c.movie_id " +
+                        "where m.movie_id = ?",
+                BeanPropertyRowMapper.newInstance(Actor.class), movieId);
+    }
+
+    private List<Director> getCrews(Long movieId) {
+        return template.query("select d.* from director d " +
+                        "join crew c on d.director_id = c.director_id " +
+                        "join movie m on m.movie_id = c.movie_id " +
+                        "where m.movie_id = ?",
+                BeanPropertyRowMapper.newInstance(Director.class), movieId);
+    }
+    private List<Video> getVideos(Long movieId) {
+        return template.query("select v.* from video v " +
+                "join movie m on v.movie_id = m.movie_id where m.movie_id = ?",
+                BeanPropertyRowMapper.newInstance(Video.class), movieId);
+    }
+
+    private RowMapper<MovieDto> movieRowMapper() {
+        return BeanPropertyRowMapper.newInstance(MovieDto.class);
+    }
+
+    private RowMapper<MovieDto> movieDtoRowMapper() {
+        return ((rs, rowNum) -> {
+            MovieDto movieDto = new MovieDto();
+            movieDto.setMovieId(rs.getLong("movie_id"));
+            movieDto.setTitle(rs.getString("title"));
+            movieDto.setOriginalTitle(rs.getString("original_title"));
+            movieDto.setOverview(rs.getString("overview"));
+            movieDto.setPosterPath(rs.getString("poster_path"));
+            movieDto.setBackdropPath(rs.getString("backdrop_path"));
+            movieDto.setRuntime(rs.getInt("runtime"));
+            movieDto.setReleaseDate(rs.getTimestamp("release_date"));
+            movieDto.setVoteAverage(rs.getFloat("vote_average"));
+            movieDto.setPopularity(rs.getFloat("popularity"));
+            return movieDto;
+        });
+    }
 }

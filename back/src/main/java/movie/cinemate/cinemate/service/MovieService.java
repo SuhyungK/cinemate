@@ -1,6 +1,11 @@
 package movie.cinemate.cinemate.service;
 
+import movie.cinemate.cinemate.dto.MovieDetailDto;
+import movie.cinemate.cinemate.dto.MovieDto;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface MovieService {
@@ -12,10 +17,12 @@ public interface MovieService {
     /**
      * 영화ID로 개별 영화 조회
      */
-    public void findById();
+    public Optional<MovieDto> findById(Long movieId);
 
     /**
      * 키워드로 영화 찾기
      */
     public void findByKeyword();
+
+    public List<MovieDetailDto> findMovieDetail();
 }

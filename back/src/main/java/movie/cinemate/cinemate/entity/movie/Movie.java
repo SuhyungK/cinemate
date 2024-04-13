@@ -1,4 +1,4 @@
-package movie.cinemate.cinemate.domain;
+package movie.cinemate.cinemate.entity.movie;
 
 import lombok.Data;
 

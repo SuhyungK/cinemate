@@ -1,7 +1,7 @@
 package movie.cinemate.cinemate.repository.jdbc;
 
 import lombok.extern.slf4j.Slf4j;
-import movie.cinemate.cinemate.domain.Genre;
+import movie.cinemate.cinemate.entity.movie.Genre;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -18,7 +18,7 @@ public class GenreRepository {
         try {
             con = DBConnectionUtil.getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setLong(1, genre.getId());
+            pstmt.setLong(1, genre.getGenreId());
             pstmt.setString(2, genre.getName());
 //            pstmt.executeUpdate();
             return genre;

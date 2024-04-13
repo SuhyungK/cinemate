@@ -1,26 +1,24 @@
 package movie.cinemate.cinemate.repository.jdbc;
 
 import lombok.extern.slf4j.Slf4j;
-import movie.cinemate.cinemate.domain.Movie;
-import movie.cinemate.cinemate.domain.MovieDTO;
-import movie.cinemate.cinemate.repository.MovieRepository;
-import org.springframework.stereotype.Repository;
+import movie.cinemate.cinemate.entity.movie.Movie;
+import movie.cinemate.cinemate.dto.MovieDetailDto;
+import movie.cinemate.cinemate.dto.MovieDto;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static movie.cinemate.cinemate.repository.jdbc.DBConnectionUtil.*;
 
 @Slf4j
-@Repository
-public class MovieJdbcRepository implements MovieRepository {
+public class MovieJdbcRepository {
 
     /**
      * 전체 영화 조회
      */
-    @Override
-    public List<MovieDTO> findAll() {
+    public List<MovieDto> findAll(int page) {
         String sql = "select * from movie";
 
         Connection con = null;
@@ -31,20 +29,20 @@ public class MovieJdbcRepository implements MovieRepository {
             con = getConnection();
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
-            List<MovieDTO> movies = new ArrayList<>();
+            List<MovieDto> movies = new ArrayList<>();
             while (rs.next()) {
-                MovieDTO movie = MovieDTO.of(
-                        rs.getLong("movie_id"),
-                        rs.getString("title"),
-                        rs.getString("original_title"),
-                        rs.getString("overview"),
-                        rs.getString("poster_path"),
-                        rs.getString("backdrop_path"),
-                        rs.getInt("runtime"),
-                        rs.getDate("release_date"),
-                        rs.getFloat("vote_average")
-                );
-                movies.add(movie);
+                MovieDto movieDto = new MovieDto();
+                movieDto.setMovieId(rs.getLong("movie_id"));
+                movieDto.setTitle(rs.getString("title"));
+                movieDto.setOriginalTitle(rs.getString("original_title"));
+                movieDto.setOverview(rs.getString("overview"));
+                movieDto.setPosterPath(rs.getString("poster_path"));
+                movieDto.setBackdropPath(rs.getString("backdrop_path"));
+                movieDto.setRuntime(rs.getInt("runtime"));
+                movieDto.setReleaseDate(rs.getTimestamp("release_date"));
+                movieDto.setVoteAverage(rs.getFloat("vote_average"));
+                movieDto.setPopularity(rs.getFloat("popularity"));
+                movies.add(movieDto);
             }
             return movies;
         } catch (SQLException e) {
@@ -58,8 +56,7 @@ public class MovieJdbcRepository implements MovieRepository {
     /**
      * 키워드로 영화 찾기
      */
-    @Override
-    public List<MovieDTO> findByKeyword(String keyword) {
+    public List<MovieDto> findByKeyword(String keyword) {
         String sql = "select * from movie where title like ?";
 
         Connection con = null;
@@ -72,20 +69,20 @@ public class MovieJdbcRepository implements MovieRepository {
             ps.setString(1, "%" + keyword + "%");
             log.info("sql statement={}", ps);
             rs = ps.executeQuery();
-            List<MovieDTO> movies = new ArrayList<>();
+            List<MovieDto> movies = new ArrayList<>();
             while (rs.next()) {
-                MovieDTO movie = MovieDTO.of(
-                        rs.getLong("movie_id"),
-                        rs.getString("title"),
-                        rs.getString("original_title"),
-                        rs.getString("overview"),
-                        rs.getString("poster_path"),
-                        rs.getString("backdrop_path"),
-                        rs.getInt("runtime"),
-                        rs.getDate("release_date"),
-                        rs.getFloat("vote_average")
-                );
-                movies.add(movie);
+                MovieDto movieDto = new MovieDto();
+                movieDto.setMovieId(rs.getLong("movie_id"));
+                movieDto.setTitle(rs.getString("title"));
+                movieDto.setOriginalTitle(rs.getString("original_title"));
+                movieDto.setOverview(rs.getString("overview"));
+                movieDto.setPosterPath(rs.getString("poster_path"));
+                movieDto.setBackdropPath(rs.getString("backdrop_path"));
+                movieDto.setRuntime(rs.getInt("runtime"));
+                movieDto.setReleaseDate(rs.getTimestamp("release_date"));
+                movieDto.setVoteAverage(rs.getFloat("vote_average"));
+                movieDto.setPopularity(rs.getFloat("popularity"));
+                movies.add(movieDto);
             }
             return movies;
         } catch (SQLException e) {
@@ -93,6 +90,14 @@ public class MovieJdbcRepository implements MovieRepository {
         } finally {
             close(con, ps, rs);
         }
+    }
+
+    public Optional<MovieDto> findDetail(Long movieId) {
+        return Optional.empty();
+    }
+
+    public List<MovieDetailDto> getMovieDetailsWithGenres() {
+        return List.of();
     }
 
     /**

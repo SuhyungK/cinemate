@@ -1,20 +1,29 @@
 package movie.cinemate.cinemate.service;
 
+import movie.cinemate.cinemate.dto.MovieDetailDto;
+import movie.cinemate.cinemate.dto.MovieDto;
+import movie.cinemate.cinemate.repository.jdbctemplate.MovieRepositoryImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
-public class MovieServiceImpl implements MovieService{
-    @Override
+public class MovieServiceImpl {
+    private final MovieRepositoryImpl movieRepository;
+
+    public MovieServiceImpl(MovieRepositoryImpl MovieRepositoryImpl) {
+        this.movieRepository = MovieRepositoryImpl;
+    }
+
     public void findAll() {
 
     }
 
-    @Override
-    public void findById() {
-
+    public Optional<MovieDto> findById(Long movieId) {
+        return Optional.empty();
     }
 
-    @Override
     public void findByKeyword() {
 
     }
