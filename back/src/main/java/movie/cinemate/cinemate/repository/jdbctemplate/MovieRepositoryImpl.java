@@ -24,7 +24,11 @@ public class MovieRepositoryImpl {
 
     public List<MovieDto> findAll(int page) {
         String sql = "select * from movie limit ? offset ?";
-        return template.query(sql, movieDtoRowMapper(), 30, (page-1) * 30);
+        List<Object> param = new ArrayList<>();
+        param.add(30);
+        param.add((page-1) * 30 + 1);
+        log.info("param  {}", param.toString());
+        return template.query(sql, movieDtoRowMapper(), param.toArray());
     }
 
     public MovieDto getMovie(Long movieId) {
@@ -66,21 +70,6 @@ public class MovieRepositoryImpl {
     }
 
     public MovieDetailDto getMovieDetail(Long movieId) {
-//        String query = "SELECT m.movie_id, m.title, m.original_title, m.overview, m.poster_path, m.backdrop_path, m.runtime, " +
-//                "m.release_date, m.vote_average, m.popularity, g.genre_id, g.name FROM movie m " +
-//                "JOIN movie_genre mg ON m.movie_id = mg.movie_id " +
-//                "JOIN genre g ON mg.genre_id = g.genre_id " +
-//                "WHERE m.movie_id = ?;";
-//        Map<Long, MovieDetailDto> map = new HashMap<>();
-//
-//        template.query(query, (rs, rowNum) -> {
-//            if (map.get(movieId) == null) {
-//                map.put(movieId, (new BeanPropertyRowMapper<>(MovieDetailDto.class)).mapRow(rs, rowNum));
-//            }
-//            map.get(movieId).getGenres().add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
-//            return null;
-//        }, movieId);
-
         MovieDetailDto movie = getMovie(movieId, MovieDetailDto.class);
         movie.setActors(getCasts(movieId));
         movie.setDirectors(getCrews(movieId));

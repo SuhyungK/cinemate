@@ -23,7 +23,7 @@ public class MovieController {
      * 전체 영화 조회 (개발용)
      */
     @ResponseBody
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<MovieDto>> movieMain() {
         log.info("영화 메인 화면");
         return new ResponseEntity<>(movieRepository.findAll(1), HttpStatus.OK);
@@ -32,10 +32,11 @@ public class MovieController {
     /**
      * 전체 영화 조회 페이징
      */
-//    @GetMapping
-//    public void moviePage(@RequestParam int page) {
-//
-//    }
+    @GetMapping()
+    public ResponseEntity<List<MovieDto>> movieByPage(@RequestParam int page) {
+        log.info("page={}", page);
+        return new ResponseEntity<>(movieRepository.findAll(page), HttpStatus.OK);
+    }
 
     /**
      * 키워드로 영화 제목 검색
