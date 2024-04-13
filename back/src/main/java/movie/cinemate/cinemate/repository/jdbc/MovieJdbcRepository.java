@@ -39,7 +39,7 @@ public class MovieJdbcRepository {
                 movieDto.setPosterPath(rs.getString("poster_path"));
                 movieDto.setBackdropPath(rs.getString("backdrop_path"));
                 movieDto.setRuntime(rs.getInt("runtime"));
-                movieDto.setReleaseDate(rs.getTimestamp("release_date"));
+                movieDto.setReleaseDate(rs.getTimestamp("release_date").toLocalDateTime());
                 movieDto.setVoteAverage(rs.getFloat("vote_average"));
                 movieDto.setPopularity(rs.getFloat("popularity"));
                 movies.add(movieDto);
@@ -79,7 +79,7 @@ public class MovieJdbcRepository {
                 movieDto.setPosterPath(rs.getString("poster_path"));
                 movieDto.setBackdropPath(rs.getString("backdrop_path"));
                 movieDto.setRuntime(rs.getInt("runtime"));
-                movieDto.setReleaseDate(rs.getTimestamp("release_date"));
+                movieDto.setReleaseDate(rs.getTimestamp("release_date").toLocalDateTime());
                 movieDto.setVoteAverage(rs.getFloat("vote_average"));
                 movieDto.setPopularity(rs.getFloat("popularity"));
                 movies.add(movieDto);

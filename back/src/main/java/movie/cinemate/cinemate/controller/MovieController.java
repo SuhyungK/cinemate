@@ -52,6 +52,6 @@ public class MovieController {
     @GetMapping("/{movieId}")
     public ResponseEntity<MovieDetailDto> movieDetail(@PathVariable Long movieId) {
 //        log.info("movieId : {}", movieId);
-        return new ResponseEntity<>(movieRepository.getMoveDetail(movieId), HttpStatus.OK);
+        return new ResponseEntity<>(movieRepository.getMovieDetail(movieId), HttpStatus.OK);
     }
 }

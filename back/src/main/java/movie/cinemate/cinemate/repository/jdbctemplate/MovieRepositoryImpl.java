@@ -27,27 +27,66 @@ public class MovieRepositoryImpl {
         return template.query(sql, movieDtoRowMapper(), 30, (page-1) * 30);
     }
 
-    public MovieDetailDto getMoveDetail(Long movieId) {
+    public MovieDto getMovie(Long movieId) {
         String query = "SELECT m.movie_id, m.title, m.original_title, m.overview, m.poster_path, m.backdrop_path, m.runtime, " +
                 "m.release_date, m.vote_average, m.popularity, g.genre_id, g.name FROM movie m " +
                 "JOIN movie_genre mg ON m.movie_id = mg.movie_id " +
                 "JOIN genre g ON mg.genre_id = g.genre_id " +
                 "WHERE m.movie_id = ?;";
-        Map<Long, MovieDetailDto> map = new HashMap<>();
+        Map<Long, MovieDto> map = new HashMap<>();
 
         template.query(query, (rs, rowNum) -> {
             if (map.get(movieId) == null) {
-                map.put(movieId, (new BeanPropertyRowMapper<>(MovieDetailDto.class)).mapRow(rs, rowNum));
+                map.put(movieId, (new BeanPropertyRowMapper<>(MovieDto.class)).mapRow(rs, rowNum));
             }
             map.get(movieId).getGenres().add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
             return null;
         }, movieId);
 
-        map.get(movieId).setActors(getCasts(movieId));
-        map.get(movieId).setDirectors(getCrews(movieId));
-        map.get(movieId).setVideos(getVideos(movieId));
-        log.info("Actors={}", getCasts(movieId));
         return map.get(movieId);
+    }
+
+    public <T extends MovieDto> T getMovie(Long movieId, Class<T> clazz) {
+        String query = "SELECT m.movie_id, m.title, m.original_title, m.overview, m.poster_path, m.backdrop_path, m.runtime, " +
+                "m.release_date, m.vote_average, m.popularity, g.genre_id, g.name FROM movie m " +
+                "JOIN movie_genre mg ON m.movie_id = mg.movie_id " +
+                "JOIN genre g ON mg.genre_id = g.genre_id " +
+                "WHERE m.movie_id = ?;";
+        Map<Long, T> map = new HashMap<>();
+
+        template.query(query, (rs, rowNum) -> {
+            if (map.get(movieId) == null) {
+                map.put(movieId, (new BeanPropertyRowMapper<>(clazz)).mapRow(rs, rowNum));
+            }
+            map.get(movieId).getGenres().add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
+            return null;
+        }, movieId);
+
+        return map.get(movieId);
+    }
+
+    public MovieDetailDto getMovieDetail(Long movieId) {
+//        String query = "SELECT m.movie_id, m.title, m.original_title, m.overview, m.poster_path, m.backdrop_path, m.runtime, " +
+//                "m.release_date, m.vote_average, m.popularity, g.genre_id, g.name FROM movie m " +
+//                "JOIN movie_genre mg ON m.movie_id = mg.movie_id " +
+//                "JOIN genre g ON mg.genre_id = g.genre_id " +
+//                "WHERE m.movie_id = ?;";
+//        Map<Long, MovieDetailDto> map = new HashMap<>();
+//
+//        template.query(query, (rs, rowNum) -> {
+//            if (map.get(movieId) == null) {
+//                map.put(movieId, (new BeanPropertyRowMapper<>(MovieDetailDto.class)).mapRow(rs, rowNum));
+//            }
+//            map.get(movieId).getGenres().add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
+//            return null;
+//        }, movieId);
+
+        MovieDetailDto movie = getMovie(movieId, MovieDetailDto.class);
+        movie.setActors(getCasts(movieId));
+        movie.setDirectors(getCrews(movieId));
+        movie.setVideos(getVideos(movieId));
+
+        return movie;
     }
 
     private List<Actor> getCasts(Long movieId) {
@@ -85,7 +124,7 @@ public class MovieRepositoryImpl {
             movieDto.setPosterPath(rs.getString("poster_path"));
             movieDto.setBackdropPath(rs.getString("backdrop_path"));
             movieDto.setRuntime(rs.getInt("runtime"));
-            movieDto.setReleaseDate(rs.getTimestamp("release_date"));
+            movieDto.setReleaseDate(rs.getTimestamp("release_date").toLocalDateTime());
             movieDto.setVoteAverage(rs.getFloat("vote_average"));
             movieDto.setPopularity(rs.getFloat("popularity"));
             return movieDto;
