@@ -2,8 +2,8 @@ package movie.cinemate.cinemate.repository.jdbc;
 
 import lombok.extern.slf4j.Slf4j;
 import movie.cinemate.cinemate.entity.movie.Movie;
-import movie.cinemate.cinemate.dto.MovieDetailDto;
-import movie.cinemate.cinemate.dto.MovieDto;
+import movie.cinemate.cinemate.dto.movie.MovieDetailDto;
+import movie.cinemate.cinemate.dto.movie.MovieDto;
 
 import java.sql.*;
 import java.util.ArrayList;
