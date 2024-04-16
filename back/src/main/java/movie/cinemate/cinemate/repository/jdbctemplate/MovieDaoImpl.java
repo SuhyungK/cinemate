@@ -14,11 +14,11 @@ import java.util.*;
 
 @Slf4j
 @Repository
-public class MovieRepositoryImpl {
+public class MovieDaoImpl {
 
     private final JdbcTemplate template;
 
-    public MovieRepositoryImpl(DataSource dataSource) {
+    public MovieDaoImpl(DataSource dataSource) {
         this.template = new JdbcTemplate(dataSource);
     }
 

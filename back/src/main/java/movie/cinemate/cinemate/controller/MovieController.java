@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movie.cinemate.cinemate.dto.movie.MovieDetailDto;
 import movie.cinemate.cinemate.dto.movie.MovieDto;
-import movie.cinemate.cinemate.repository.jdbctemplate.MovieRepositoryImpl;
+import movie.cinemate.cinemate.repository.jdbctemplate.MovieDaoImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieController {
 
-    private final MovieRepositoryImpl movieRepository;
+    private final MovieDaoImpl movieRepository;
 
     /**
      * 전체 영화 조회 (개발용)
