@@ -1,4 +1,4 @@
-package movie.cinemate.cinemate.dto;
+package movie.cinemate.cinemate.dto.movie;
 
 import lombok.Getter;
 import lombok.Setter;

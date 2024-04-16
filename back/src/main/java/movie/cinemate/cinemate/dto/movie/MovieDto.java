@@ -1,4 +1,4 @@
-package movie.cinemate.cinemate.dto;
+package movie.cinemate.cinemate.dto.movie;
 
 import lombok.*;
 import movie.cinemate.cinemate.entity.movie.Genre;

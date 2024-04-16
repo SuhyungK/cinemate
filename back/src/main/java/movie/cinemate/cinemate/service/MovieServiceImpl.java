@@ -1,11 +1,9 @@
 package movie.cinemate.cinemate.service;
 
-import movie.cinemate.cinemate.dto.MovieDetailDto;
-import movie.cinemate.cinemate.dto.MovieDto;
+import movie.cinemate.cinemate.dto.movie.MovieDto;
 import movie.cinemate.cinemate.repository.jdbctemplate.MovieRepositoryImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service

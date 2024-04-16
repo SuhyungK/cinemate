@@ -2,8 +2,8 @@ package movie.cinemate.cinemate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import movie.cinemate.cinemate.dto.MovieDetailDto;
-import movie.cinemate.cinemate.dto.MovieDto;
+import movie.cinemate.cinemate.dto.movie.MovieDetailDto;
+import movie.cinemate.cinemate.dto.movie.MovieDto;
 import movie.cinemate.cinemate.repository.jdbctemplate.MovieRepositoryImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/movies")
+@RequestMapping("/api/v1/movie")
 @RequiredArgsConstructor
 public class MovieController {
 
@@ -23,7 +23,7 @@ public class MovieController {
      * 전체 영화 조회 (개발용)
      */
     @ResponseBody
-    @GetMapping("/all")
+    @GetMapping("/movies")
     public ResponseEntity<List<MovieDto>> movieMain() {
         log.info("영화 메인 화면");
         return new ResponseEntity<>(movieRepository.findAll(1), HttpStatus.OK);
@@ -43,7 +43,7 @@ public class MovieController {
      */
     @ResponseBody
     @GetMapping("/search")
-    public String search(@RequestParam("keyword") String keyword) {
+    public String search(@RequestParam("q") String q) {
         return null;
     }
 
@@ -52,7 +52,7 @@ public class MovieController {
      */
     @GetMapping("/{movieId}")
     public ResponseEntity<MovieDetailDto> movieDetail(@PathVariable Long movieId) {
-//        log.info("movieId : {}", movieId);
+        log.info("movieId : {}", movieId);
         return new ResponseEntity<>(movieRepository.getMovieDetail(movieId), HttpStatus.OK);
     }
 }
