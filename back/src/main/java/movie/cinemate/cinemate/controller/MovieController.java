@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movie.cinemate.cinemate.dto.movie.MovieDetailDto;
 import movie.cinemate.cinemate.dto.movie.MovieDto;
+import movie.cinemate.cinemate.dto.review.ReviewRequestDto;
 import movie.cinemate.cinemate.repository.jdbctemplate.MovieDaoImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,5 +62,13 @@ public class MovieController {
     public ResponseEntity<MovieDetailDto> movieDetail(@PathVariable Long movieId) {
         log.info("movieId : {}", movieId);
         return new ResponseEntity<>(movieRepository.getMovieDetail(movieId), HttpStatus.OK);
+    }
+
+    /**
+     * 리뷰 작성 API
+     */
+    @PostMapping("/review")
+    public void writeReview(@ModelAttribute ReviewRequestDto dto) {
+
     }
 }

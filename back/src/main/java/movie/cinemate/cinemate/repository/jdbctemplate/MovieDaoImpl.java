@@ -32,13 +32,15 @@ public class MovieDaoImpl {
 
         List<Object> param = new ArrayList<>();
         param.add(30);
-        param.add((page-1) * 30);
+        param.add((page - 1) * 30);
 
 //        log.info("param={}", param);
         Map<Long, MovieDto> map = new LinkedHashMap<>();
         template.query(sql, getRowMapper(map, MovieDto.class), param.toArray());
 //        template.queryForObject(sql, getRowMapper(map, MovieDto.class), param.toArray());
-        return map.values().stream().toList();
+        return map.values()
+                  .stream()
+                  .toList();
     }
 
     /**
@@ -61,7 +63,9 @@ public class MovieDaoImpl {
             if (map.get(movieId) == null) {
                 map.put(movieId, new BeanPropertyRowMapper<>(clazz).mapRow(rs, rowNum));
             }
-            map.get(movieId).getGenres().add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
+            map.get(movieId)
+               .getGenres()
+               .add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
             return null;
         };
     }
@@ -95,25 +99,36 @@ public class MovieDaoImpl {
 
     private List<Actor> getCasts(Long movieId) {
         return template.query("select a.* from actor a " +
-                        "join cast c on a.actor_id = c.actor_id " +
-                        "join movie m on m.movie_id = c.movie_id " +
+                        "left join cast c on a.actor_id = c.actor_id " +
+                        "left join movie m on m.movie_id = c.movie_id " +
                         "where m.movie_id = ?",
                 BeanPropertyRowMapper.newInstance(Actor.class), movieId);
     }
 
     private List<Director> getCrews(Long movieId) {
         return template.query("select d.* from director d " +
-                        "join crew c on d.director_id = c.director_id " +
-                        "join movie m on m.movie_id = c.movie_id " +
+                        "left join crew c on d.director_id = c.director_id " +
+                        "left join movie m on m.movie_id = c.movie_id " +
                         "where m.movie_id = ?",
                 BeanPropertyRowMapper.newInstance(Director.class), movieId);
     }
+
     private List<Video> getVideos(Long movieId) {
-        return template.query("select v.* from video v " +
-                "join movie m on v.movie_id = m.movie_id where m.movie_id = ?",
+        return template.query("select v.* " +
+                        "from video v " +
+                        "left join movie m on v.movie_id = m.movie_id " +
+                        "where m.movie_id = ?",
                 BeanPropertyRowMapper.newInstance(Video.class), movieId);
     }
 
+    private List<Review> getReviews(Long movieId) {
+        return template.query("select * " +
+                        "from movie r.* " +
+                        "left join review r " +
+                        "on m.movie_id = r.movie_id " +
+                        "where m.movie_id = ?",
+                BeanPropertyRowMapper.newInstance(Review.class), movieId);
+    }
 //    private RowMapper<MovieDto> movieRowMapper() {
 //        return BeanPropertyRowMapper.newInstance(MovieDto.class);
 //    }

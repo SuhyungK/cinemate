@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import movie.cinemate.cinemate.entity.movie.Actor;
 import movie.cinemate.cinemate.entity.movie.Director;
+import movie.cinemate.cinemate.entity.movie.Review;
 import movie.cinemate.cinemate.entity.movie.Video;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public class MovieDetailDto extends MovieDto {
     private List<Actor> actors;
     private List<Director> directors;
     private List<Video> videos;
+    private List<Review> review;
 }
