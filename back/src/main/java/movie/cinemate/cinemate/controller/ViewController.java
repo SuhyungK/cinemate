@@ -14,7 +14,4 @@ public class ViewController {
         log.info("MainController");
         return "redirect:/";
     }
-
-
-
 }
