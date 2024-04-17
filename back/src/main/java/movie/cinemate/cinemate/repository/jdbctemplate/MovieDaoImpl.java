@@ -22,6 +22,9 @@ public class MovieDaoImpl {
         this.template = new JdbcTemplate(dataSource);
     }
 
+    /**
+     * 전체 영화 조회
+     */
     public List<MovieDto> findAll(int page) {
         String sql = "select * from (select * from movie order by movie.popularity desc limit ? offset ?) m " +
                 "left join movie_genre mg on m.movie_id = mg.movie_id " +
@@ -31,16 +34,20 @@ public class MovieDaoImpl {
         param.add(30);
         param.add((page-1) * 30);
 
-        log.info("param={}", param);
+//        log.info("param={}", param);
         Map<Long, MovieDto> map = new LinkedHashMap<>();
         template.query(sql, getRowMapper(map, MovieDto.class), param.toArray());
 //        template.queryForObject(sql, getRowMapper(map, MovieDto.class), param.toArray());
         return map.values().stream().toList();
     }
 
+    /**
+     * 개별 영화 상세 조회
+     * 장르, 감독, 배우, 영상
+     */
     public MovieDetailDto getMovieDetail(Long movieId) {
         MovieDetailDto movie = getMovie(movieId, MovieDetailDto.class);
-        log.info("movie={}", movie);
+//        log.info("movie={}", movie);
         movie.setActors(getCasts(movieId));
         movie.setDirectors(getCrews(movieId));
         movie.setVideos(getVideos(movieId));
@@ -66,18 +73,24 @@ public class MovieDaoImpl {
                 "left JOIN genre g ON mg.genre_id = g.genre_id " +
                 "WHERE m.movie_id = ?;";
         Map<Long, T> map = new HashMap<>();
-        template.queryForObject(query, (rs, rowNum) -> {
+        template.query(query, movieRowMapper(movieId, clazz, map), movieId);
+//        template.queryForObject(query, movieRowMapper(movieId, clazz, map), movieId);
+        return map.get(movieId);
+    }
+
+    private static <T extends MovieDto> RowMapper<Object> movieRowMapper(Long movieId, Class<T> clazz, Map<Long, T> map) {
+        return (rs, rowNum) -> {
             if (map.get(movieId) == null) {
                 map.put(movieId, (new BeanPropertyRowMapper<>(clazz)).mapRow(rs, rowNum));
             }
 
             if (rs.getLong("genre_id") != 0) {
-                map.get(movieId).getGenres().add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
+                map.get(movieId)
+                   .getGenres()
+                   .add((new BeanPropertyRowMapper<>(Genre.class)).mapRow(rs, rowNum));
             }
             return null;
-        }, movieId);
-
-        return map.get(movieId);
+        };
     }
 
     private List<Actor> getCasts(Long movieId) {
