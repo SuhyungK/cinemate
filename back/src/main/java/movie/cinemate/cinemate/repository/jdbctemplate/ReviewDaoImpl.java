@@ -1,9 +1,9 @@
 package movie.cinemate.cinemate.repository.jdbctemplate;
 
 import lombok.extern.slf4j.Slf4j;
-import movie.cinemate.cinemate.dto.review.ReviewRequestDto;
 import movie.cinemate.cinemate.dto.review.ReviewResponseDto;
 import movie.cinemate.cinemate.entity.movie.Review;
+import movie.cinemate.cinemate.utils.NestedRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -15,11 +15,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import javax.swing.text.html.Option;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -34,17 +31,9 @@ public class ReviewDaoImpl {
     /**
      * TODO : 영화 리뷰 작성
      */
-    public Long addReview(ReviewRequestDto dto, String userId) {
+    public Long add(Review review) {
         String sql = "insert into review (movie_id, user_id, content, created_at, rate) " +
                 "values (:movieId, :userId, :content, :createdAt, :rate)";
-
-        Review review = Review.builder()
-                              .movieId(dto.getMovieId())
-                              .userId(userId)
-                              .content(dto.getContent())
-                              .rate(dto.getRate())
-                              .createdAt(LocalDateTime.now())
-                              .build();
 
         SqlParameterSource param = new BeanPropertySqlParameterSource(review);
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -57,15 +46,13 @@ public class ReviewDaoImpl {
     /**
      * TODO : 영화 리뷰 수정
      */
-    public Long updateReview(ReviewRequestDto dto, Long reviewId) {
+    public Long updateReview(Review review) {
+        Long reviewId = review.getReviewId();
         String sql = "update review " +
                 "set content=:content, updated_at=:updatedAt " +
                 "where review_id=:reviewId";
 
-        SqlParameterSource param = new BeanPropertySqlParameterSource(
-                Review.builder()
-                      .content(dto.getContent())
-                      .rate(dto.getRate()));
+        SqlParameterSource param = new BeanPropertySqlParameterSource(review);
 
         template.update(sql, param);
         return reviewId;
@@ -74,16 +61,21 @@ public class ReviewDaoImpl {
     /**
      * TODO : 개별 영화 리뷰 조회(개발용)
      */
-    public Optional<ReviewResponseDto> findReviewById(Long reviewId) {
-
+    public Optional<Review> findByReviewId(Long reviewId) {
         try {
-            return Optional.ofNullable(
-                    template.queryForObject(
-                            "select * from review where review_id = :reviewId",
-                            Map.of("reviewId", reviewId),
-                            new BeanPropertyRowMapper<>(ReviewResponseDto.class)
-                    )
-            );
+            return Optional.ofNullable(template.queryForObject(
+                    "select r.movie_id as movieId, " +
+                            "r.review_id as reviewId, " +
+                            "user.id as 'user.id', " +
+                            "user.nickname as 'user.nickname', " +
+                            "r.content, " +
+                            "r.rate, " +
+                            "r.created_at as createdAt, " +
+                            "r.updated_at as updatedAt " +
+                    "from review r " +
+                    "join user " +
+                    "on r.user_id = user.user_id " +
+                    "where r.review_id = :reviewId", Map.of("reviewId", reviewId), new NestedRowMapper<>(Review.class)));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -92,12 +84,11 @@ public class ReviewDaoImpl {
     /**
      * TODO : 해당 영화의 모든 리뷰 조회
      */
-    public List<ReviewResponseDto> findReviewByMovieId(Long movieId) {
-        return template.query("select * " +
-                "from review " +
-                "where review.movie_id = :movieId",
-                Map.of("movidId", movieId),
-                new BeanPropertyRowMapper<>(ReviewResponseDto.class));
+    public List<Review> findAllByMovieId(Long movieId) {
+        return template.query(
+                "select r.movie_id as movieId, r.review_id as reviewId, r.content, r.rate, r.created_at as createdAt, u.id as 'user.id', u.nickname as 'user.nickname' from review r join user u on r.user_id = u.user_id where r.movie_id = :movieId",
+                Map.of("movieId", movieId),
+                new NestedRowMapper<>(Review.class));
     }
 
 
@@ -109,5 +100,20 @@ public class ReviewDaoImpl {
                 new MapSqlParameterSource()
                         .addValue("reviewId", reviewId));
 
+    }
+
+    /**
+     * TODO : 리뷰 작성자의 userId
+     */
+    public Optional<String> findUserIdFromReview(Long reviewId) {
+        try {
+            return Optional.ofNullable(template.queryForObject(
+                    "select user_id from review where review_id = :reviewId",
+                    Map.of("reviewId", reviewId),
+                    String.class
+            ));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

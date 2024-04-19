@@ -13,9 +13,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReviewResponseDto {
     private Long reviewId;
-    private String id; // 유저의 ID
     private String content;
     private Float rate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    // 작성자 정보
+    private String id; // 유저의 ID
+    private String nickname; // 유저의 닉네임
 }

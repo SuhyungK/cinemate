@@ -6,6 +6,7 @@ import movie.cinemate.cinemate.dto.movie.MovieDetailDto;
 import movie.cinemate.cinemate.dto.movie.MovieDto;
 import movie.cinemate.cinemate.dto.review.ReviewRequestDto;
 import movie.cinemate.cinemate.repository.jdbctemplate.MovieDaoImpl;
+import movie.cinemate.cinemate.service.impl.ReviewServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.List;
 public class MovieController {
 
     private final MovieDaoImpl movieRepository;
+    private final ReviewServiceImpl reviewService;
 
     /**
      * 전체 영화 조회 (개발용)
@@ -35,7 +37,7 @@ public class MovieController {
     @ResponseBody
     @GetMapping
     public ResponseEntity<List<MovieDto>> movieByPage(
-            @RequestParam int page,
+            @RequestParam(defaultValue = "1") int page,
             @SessionAttribute(name = "loginUser", required = false) String userId
             // TODO : @SessionCheck 어노테이션 작성해서 userId 가져올 수 있도록 하기
             // TODO : ArgumentResolver 공부 하기
@@ -62,13 +64,5 @@ public class MovieController {
     public ResponseEntity<MovieDetailDto> movieDetail(@PathVariable Long movieId) {
         log.info("movieId : {}", movieId);
         return new ResponseEntity<>(movieRepository.getMovieDetail(movieId), HttpStatus.OK);
-    }
-
-    /**
-     * 리뷰 작성 API
-     */
-    @PostMapping("/review")
-    public void writeReview(@ModelAttribute ReviewRequestDto dto) {
-
     }
 }
