@@ -1,10 +1,11 @@
 package movie.cinemate.cinemate.dto.user;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class UserResponseDto {
-    private Long userId;
+    private String id;
+    private String nickname;
 }
