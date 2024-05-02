@@ -4,8 +4,8 @@ import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Genre {
     private Long genreId;
     private String name;

@@ -1,7 +1,7 @@
 package movie.cinemate.cinemate.dto.movie;
 
 import lombok.*;
-import movie.cinemate.cinemate.entity.movie.Genre;
+import movie.cinemate.cinemate.entity.movie.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class MovieDto {
+@AllArgsConstructor
+public class MovieResponseDto {
     private Long movieId;
     private String title;
     private String originalTitle;
@@ -24,5 +24,9 @@ public class MovieDto {
     private Float voteAverage;
     private Float popularity;
 
-    List<Genre> genres = new ArrayList<>();
+    private List<Genre> genres = new ArrayList<>();
+    private List<Actor> actors;
+    private List<Director> directors;
+    private List<Video> videos;
+    private List<Review> reviews;
 }

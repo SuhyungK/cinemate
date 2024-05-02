@@ -1,11 +1,10 @@
 package movie.cinemate.cinemate.repository.jdbctemplate;
 
 import lombok.extern.slf4j.Slf4j;
-import movie.cinemate.cinemate.dto.review.ReviewResponseDto;
 import movie.cinemate.cinemate.entity.movie.Review;
+import movie.cinemate.cinemate.repository.ReviewDao;
 import movie.cinemate.cinemate.utils.NestedRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -21,7 +20,7 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-public class ReviewDaoImpl {
+public class ReviewDaoImpl implements ReviewDao {
     NamedParameterJdbcTemplate template;
 
     public ReviewDaoImpl(DataSource dataSource) {
@@ -32,15 +31,17 @@ public class ReviewDaoImpl {
      * TODO : 영화 리뷰 작성
      */
     public Long add(Review review) {
-        String sql = "insert into review (movie_id, user_id, content, created_at, rate) " +
-                "values (:movieId, :userId, :content, :createdAt, :rate)";
+        String sql = "insert into review (movie_id, member_id, content, created_at, rate) " +
+                "values (:movieId, :memberId, :content, :createdAt, :rate)";
 
+//        review.setCreatedAt(LocalDateTime.now());
         SqlParameterSource param = new BeanPropertySqlParameterSource(review);
         KeyHolder keyHolder = new GeneratedKeyHolder();
+//        System.out.println(keyHolder.getKey());
+//        log.info("keyHolder : {}", keyHolder.getKey().longValue());
         template.update(sql, param, keyHolder);
 
-        return keyHolder.getKey()
-                        .longValue();
+        return keyHolder.getKey().longValue();
     }
 
     /**
@@ -64,17 +65,17 @@ public class ReviewDaoImpl {
     public Optional<Review> findByReviewId(Long reviewId) {
         try {
             return Optional.ofNullable(template.queryForObject(
-                    "select r.movie_id as movieId, " +
-                            "r.review_id as reviewId, " +
-                            "user.id as 'user.id', " +
-                            "user.nickname as 'user.nickname', " +
+                    "select r.movie_id, " +
+                            "r.review_id, " +
+                            "member.id as `member.id`, " +
+                            "member.nickname AS `member.nickname`, " +
                             "r.content, " +
                             "r.rate, " +
-                            "r.created_at as createdAt, " +
-                            "r.updated_at as updatedAt " +
+                            "r.created_at, " +
+                            "r.updated_at " +
                     "from review r " +
-                    "join user " +
-                    "on r.user_id = user.user_id " +
+                    "join member " +
+                    "on r.member_id = member.member_id " +
                     "where r.review_id = :reviewId", Map.of("reviewId", reviewId), new NestedRowMapper<>(Review.class)));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -86,7 +87,12 @@ public class ReviewDaoImpl {
      */
     public List<Review> findAllByMovieId(Long movieId) {
         return template.query(
-                "select r.movie_id as movieId, r.review_id as reviewId, r.content, r.rate, r.created_at as createdAt, u.id as 'user.id', u.nickname as 'user.nickname' from review r join user u on r.user_id = u.user_id where r.movie_id = :movieId",
+                "select r.movie_id , " +
+                        "r.review_id , " +
+                        "r.content, r.rate, " +
+                        "r.created_at , " +
+                        "u.id as `member.id`, " +
+                        "u.nickname as `member.nickname` from review r join member u on r.member_id = u.member_id where r.movie_id = :movieId",
                 Map.of("movieId", movieId),
                 new NestedRowMapper<>(Review.class));
     }
@@ -108,7 +114,7 @@ public class ReviewDaoImpl {
     public Optional<String> findUserIdFromReview(Long reviewId) {
         try {
             return Optional.ofNullable(template.queryForObject(
-                    "select user_id from review where review_id = :reviewId",
+                    "select member_id from review where review_id = :reviewId",
                     Map.of("reviewId", reviewId),
                     String.class
             ));

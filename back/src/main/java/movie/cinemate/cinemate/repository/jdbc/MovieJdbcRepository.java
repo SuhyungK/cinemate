@@ -2,7 +2,7 @@ package movie.cinemate.cinemate.repository.jdbc;
 
 import lombok.extern.slf4j.Slf4j;
 import movie.cinemate.cinemate.entity.movie.Movie;
-import movie.cinemate.cinemate.dto.movie.MovieDetailDto;
+import movie.cinemate.cinemate.dto.movie.MovieResponseDto;
 import movie.cinemate.cinemate.dto.movie.MovieDto;
 
 import java.sql.*;
@@ -96,7 +96,7 @@ public class MovieJdbcRepository {
         return Optional.empty();
     }
 
-    public List<MovieDetailDto> getMovieDetailsWithGenres() {
+    public List<MovieResponseDto> getMovieDetailsWithGenres() {
         return List.of();
     }
 
