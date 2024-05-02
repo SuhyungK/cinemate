@@ -1,28 +1,38 @@
 package movie.cinemate.cinemate.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import movie.cinemate.cinemate.dto.movie.MovieDto;
+import movie.cinemate.cinemate.dto.movie.MovieResponseDto;
 import movie.cinemate.cinemate.repository.jdbctemplate.MovieDaoImpl;
+import movie.cinemate.cinemate.service.MovieService;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
-public class MovieServiceImpl {
-    private final MovieDaoImpl movieRepository;
+@RequiredArgsConstructor
+public class MovieServiceImpl implements MovieService {
 
-    public MovieServiceImpl(MovieDaoImpl MovieRepositoryImpl) {
-        this.movieRepository = MovieRepositoryImpl;
+    private final MovieDaoImpl movieDao;
+
+    @Override
+    public List<MovieDto> findAll(int page, int size) {
+        return movieDao.findAll(page, size);
     }
 
-    public void findAll() {
+    @Override
+    public MovieResponseDto findById(Long movieId) {
+        return movieDao.findById(movieId);
+    }
+
+    @Override
+    public void searchMovie(String q) {
+
 
     }
 
-    public Optional<MovieDto> findById(Long movieId) {
-        return Optional.empty();
-    }
-
-    public void findByKeyword() {
-
+    @Override
+    public List<MovieResponseDto> findMovieDetail() {
+        return List.of();
     }
 }

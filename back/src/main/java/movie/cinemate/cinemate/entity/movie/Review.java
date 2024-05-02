@@ -1,10 +1,10 @@
 package movie.cinemate.cinemate.entity.movie;
 
 import lombok.*;
-import movie.cinemate.cinemate.dto.user.UserResponseDto;
-import movie.cinemate.cinemate.entity.user.User;
+import movie.cinemate.cinemate.entity.member.Member;
+import org.springframework.data.annotation.Id;
 
-import java.io.Writer;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 public class Review {
     private Long reviewId;
     private Long movieId;
-    private String userId;
+    private String memberId;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Float rate;
 
-    private User user;
+    private Member member;
 }

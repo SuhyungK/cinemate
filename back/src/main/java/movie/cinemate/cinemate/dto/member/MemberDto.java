@@ -1,4 +1,4 @@
-package movie.cinemate.cinemate.dto.user;
+package movie.cinemate.cinemate.dto.member;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -6,9 +6,9 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class UserDto {
+public class MemberDto {
     @NotBlank
-    private String id;
+    private String loginId;
     @NotBlank
     private String password;
 }

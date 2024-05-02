@@ -1,5 +1,5 @@
 package movie.cinemate.cinemate.repository;
 
-public interface MovieDato {
+public interface MovieDao {
 }
 
