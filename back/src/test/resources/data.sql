@@ -1,0 +1,3 @@
+INSERT INTO MOVIE (MOVIE_ID, TITLE, ORIGINAL_TITLE, OVERVIEW, POSTER_PATH, BACKDROP_PATH, RUNTIME, RELEASE_DATE, VOTE_AVERAGE, POPULARITY) VALUES ( 1, '파묘', '파묘', '미국 LA, 거액의 의뢰를 받은 무당 화림과 봉길은 기이한 병이 대물림되는 집안의 장손을 만난다. 조상의 묫자리가 화근임을 알아챈 화림은 이장을 권하고, 돈 냄새를 맡은 최고의 풍수사 상덕과 장의사 영근이 합류한다. 절대 사람이 묻힐 수 없는 악지에 자리한 기이한 묘. 상덕은 불길한 기운을 느끼고 제안을 거절하지만, 화림의 설득으로 결국 파묘가 시작되고… 나와서는 안될 것이 나왔다.', '/aJLOmEwCLJIznN96m3t9IMz12or.jpg', '/aINel9503ompOlGKn4sIVMg09Un.jpg', 133, '2024-02-22 00:00:00', '7.8', '165.474' );
+
+INSERT INTO MEMBER (MEMBER_ID, LOGIN_ID, PASSWORD, NICKNAME, JOINED_AT)  VALUES ( '23b300a8fbb211ee945a5a8cafcae624', 'admin', 'admin', '관리자', now() );
