@@ -27,6 +27,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpSession session = request.getSession(false);
 
         if (session == null) {
+            log.info("세션 없어서 종료");
             return null;
         }
         return session.getAttribute(SessionData.SESSION_CONST);

@@ -3,25 +3,33 @@ package movie.cinemate.cinemate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movie.cinemate.cinemate.dto.review.ReviewRequestDto;
+import movie.cinemate.cinemate.dto.review.ReviewResource;
 import movie.cinemate.cinemate.entity.member.Member;
 import movie.cinemate.cinemate.entity.movie.Review;
-import movie.cinemate.cinemate.repository.jdbctemplate.ReviewDaoImpl;
+import movie.cinemate.cinemate.repository.ReviewDao;
+import movie.cinemate.cinemate.service.ReviewService;
 import movie.cinemate.cinemate.service.impl.ReviewServiceImpl;
 import movie.cinemate.cinemate.utils.argumentresolver.Login;
+import movie.cinemate.cinemate.utils.session.SessionData;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Slf4j
 @RequestMapping("/api/v1/movies/{movieId}/reviews")
 @RestController
 @RequiredArgsConstructor
 public class ReviewController {
-    private final ReviewServiceImpl reviewService;
-    private final ReviewDaoImpl reviewDao;
+    private final ReviewService reviewService;
+    private final ReviewDao reviewDao;
 
     /**
      * 해당 영화 전체 리뷰 조회
@@ -34,22 +42,21 @@ public class ReviewController {
     /**
      * 리뷰 작성
      */
-    @PostMapping
-    public void writeReview(
+    @PostMapping()
+    public ResponseEntity write(
             @ModelAttribute ReviewRequestDto dto,
-//            @SessionAttribute(name = "loginUser", required = false) String userId
+//            @SessionAttribute(name = "loginUser", required = false) String userId,
+            @PathVariable("movieId") Long movieId,
             @Login Member loginMember
             ) {
-//        reviewService.writeReview(dto, userId);
-        log.info("loginMember: {}", loginMember);
+        Long reviewId = reviewService.write(dto, loginMember);
+        WebMvcLinkBuilder linkBuilder = linkTo(methodOn(ReviewController.class, movieId).find(reviewId));
+        URI uri = linkBuilder.toUri();
+        log.info("uri = {}", uri);
 
-        reviewDao.add(Review.builder()
-                            .createdAt(LocalDateTime.now())
-                            .rate(3.5F)
-                            .memberId("23b300a8fbb211ee945a5a8cafcae624")
-                            .movieId(693134L)
-                            .content("기가 막힌다")
-                            .build());
+        ReviewResource reviewResource = new ReviewResource(reviewId);
+        reviewResource.add(linkTo(ReviewController.class, movieId).withSelfRel());
+        return ResponseEntity.created(uri).body(reviewResource);
     }
 
     /**
@@ -72,7 +79,8 @@ public class ReviewController {
      * TODO : 개별 리뷰 조회 (개발용)
      */
     @GetMapping("/{reviewId}")
-    public ResponseEntity<Review> findReview(@PathVariable Long reviewId) {
+    public ResponseEntity<Review> find(@PathVariable Long reviewId) {
+        System.out.println("asdf");
         return new ResponseEntity<>(reviewDao.findByReviewId(reviewId).get(), HttpStatus.OK);
     }
 

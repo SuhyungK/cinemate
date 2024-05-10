@@ -2,6 +2,7 @@ package movie.cinemate.cinemate.repository.jdbc;
 
 import lombok.extern.slf4j.Slf4j;
 import movie.cinemate.cinemate.entity.movie.Genre;
+import movie.cinemate.cinemate.handler.exception.UserException;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -20,11 +21,12 @@ public class GenreRepository {
             pstmt = con.prepareStatement(sql);
             pstmt.setLong(1, genre.getGenreId());
             pstmt.setString(2, genre.getName());
-//            pstmt.executeUpdate();
+            pstmt.executeUpdate();
             return genre;
         } catch (SQLException e) {
-            log.error("db error", e);
-            throw e;
+            UserException ue = new UserException("사용자 입력 에러 발생~");
+            ue.initCause(e);
+            throw ue;
         } finally {
             close(con, pstmt, null);
         }
