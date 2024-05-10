@@ -23,10 +23,10 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
 
     public String join(MemberDto joinDto) {
-        if (!checkDuplicatedUser(joinDto.getLoginId())) { // 중복 아이디 있을 시 가입 불가
-            throw new CustomUserException("중복 가입입니다", 1);
-        }
-        return memberDao.save(mapToEntity(joinDto));
+    if (!checkDuplicatedUser(joinDto.getLoginId())) { // 중복 아이디 있을 시 가입 불가
+        throw new CustomUserException("중복 가입입니다", 1);
+    }
+    return memberDao.save(mapToEntity(joinDto));
     }
 
     public Member login(MemberDto loginDto) {

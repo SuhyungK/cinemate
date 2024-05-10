@@ -29,14 +29,14 @@ public class MovieController {
     @GetMapping
     public ResponseEntity<List<MovieDto>> getAllByPage(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "30") int size,
+            @RequestParam(defaultValue = "10") int size
 //            @SessionAttribute(name = "loginUser") String userId
-            @Login Member loginMember
+//            @Login Member loginMember
             // TODO : @SessionCheck 어노테이션 작성해서 userId 가져올 수 있도록 하기
             // TODO : ArgumentResolver 공부 하기
     ) {
         log.info("page={}", page);
-        log.info("loginMember={}", loginMember);
+//        log.info("loginMember={}", loginMember);
 //        log.info("userId={}", userId);
 
         // TODO : 메인 화면 진입시 회원인 경우 (userId 있는 경우) 프로필 사진, 비회원인 경우 로그인 버튼

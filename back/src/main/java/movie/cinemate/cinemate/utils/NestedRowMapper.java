@@ -2,12 +2,10 @@ package movie.cinemate.cinemate.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.*;
-import org.springframework.data.relational.core.sql.SQL;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.JdbcUtils;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 
 @Slf4j
 public class NestedRowMapper<T> implements RowMapper<T> {

@@ -67,7 +67,7 @@ public class ReviewDaoImpl implements ReviewDao {
             return Optional.ofNullable(template.queryForObject(
                     "select r.movie_id, " +
                             "r.review_id, " +
-                            "member.id as `member.id`, " +
+                            "member.login_id As `member.login_id`, " +
                             "member.nickname AS `member.nickname`, " +
                             "r.content, " +
                             "r.rate, " +
@@ -91,7 +91,7 @@ public class ReviewDaoImpl implements ReviewDao {
                         "r.review_id , " +
                         "r.content, r.rate, " +
                         "r.created_at , " +
-                        "u.id as `member.id`, " +
+                        "u.login_id as `member.login_id`, " +
                         "u.nickname as `member.nickname` from review r join member u on r.member_id = u.member_id where r.movie_id = :movieId",
                 Map.of("movieId", movieId),
                 new NestedRowMapper<>(Review.class));

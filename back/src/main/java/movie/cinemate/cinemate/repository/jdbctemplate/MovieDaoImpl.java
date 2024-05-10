@@ -30,13 +30,14 @@ public class MovieDaoImpl {
      * 전체 영화 조회
      */
     public List<MovieDto> findAll(int page, int size) {
-        String sql = "select * from (select * from movie order by movie.popularity desc limit ? offset ?) m " +
+        String sql = "select * from " +
+                "(select * from movie order by movie.popularity desc limit ? offset ?) m " +
                 "left join movie_genre mg on m.movie_id = mg.movie_id " +
                 "left join genre g on g.genre_id = mg.genre_id";
 
         List<Object> param = new ArrayList<>();
         param.add(size);
-        param.add((page - 1) * size);
+        param.add((page-1) * size);
 
         Map<Long, MovieDto> map = new LinkedHashMap<>();
         template.query(sql, getRowMapper(map, MovieDto.class), param.toArray());
